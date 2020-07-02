@@ -26,11 +26,49 @@ class Move
   def <(other_move)
     (rock? && other_move.paper?) ||
       (paper? && other_move.scissors?) ||
-      (scissors? && other_move.rock)
+      (scissors? && other_move.rock?)
   end
 
   def to_s
     @value
+  end
+end
+
+class Score
+  WINNING_SCORE = 5
+
+  def initialize(human, computer)
+    @human = human
+    @computer = computer
+    @human_score = 0
+    @computer_score = 0
+  end
+
+  def update
+    if @human.move > @computer.move
+      @human_score += 1
+    elsif @human.move < @computer.move
+      @computer_score += 1
+    end
+  end
+
+  def display
+    puts "Current score #{@human.name}: #{@human_score} " \
+       "#{@computer.name}: #{@computer_score}"
+  end
+
+  def game_winner?
+    @human_score >= WINNING_SCORE || @computer_score >= WINNING_SCORE
+  end
+
+  def display_game_winner
+    if @human_score > @computer_score
+      puts "Congrats to #{@human.name}, who wins by a score of " \
+      "#{@human_score} to #{@computer_score}"
+    else
+      puts "Congrats to #{@computer.name}, who wins by a score of " \
+        "#{@computer_score} to #{@human_score}"
+    end
   end
 end
 
@@ -119,14 +157,25 @@ class RPSGame
     answer.downcase == 'y'
   end
 
-  def play
-    display_welcome_message
-
+  def game_loop(score)
     loop do
       human.choose
       computer.choose
       display_moves
       display_winner
+      score.update
+      score.display
+      break if score.game_winner?
+    end
+  end
+
+  def play
+    display_welcome_message
+
+    loop do
+      score = Score.new(human, computer)
+      game_loop(score)
+      score.display_game_winner
       break unless play_again?
     end
 
