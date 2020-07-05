@@ -23,14 +23,6 @@ class Move
     losing_outcomes[@value.to_sym].include?(other_move.value)
   end
 
-  def rock_wins?(other_move)
-    (other_move.scissors?) || (other_move.lizard?)
-  end
-
-  def rock_loses?(other_move)
-    (other_move.rock?) || (other_move.spock?)
-  end
-
   def to_s
     @value
   end
