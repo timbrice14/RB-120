@@ -92,16 +92,11 @@ class Human < Player
 
   def translate_choice(choice)
     case choice
-    when 'r'
-      'rock'
-    when 'p'
-      'paper'
-    when 'sc'
-      'scissors'
-    when 'l'
-      'lizard'
-    when 'sp'
-      'spock'
+    when 'r' then 'rock'
+    when 'p' then 'paper'
+    when 'sc' then 'scissors'
+    when 'l' then 'lizard'
+    when 'sp' then 'spock'
     end
   end
 
