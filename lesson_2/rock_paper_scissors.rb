@@ -1,5 +1,5 @@
 class Move
-  VALUES = ['rock', 'paper', 'scissors', 'spock', 'lizard']
+  VALUES = %w(rock paper scissors lizard spock)
 
   def initialize(value)
     @value = value
@@ -90,11 +90,26 @@ class Human < Player
     self.name = n
   end
 
+  def translate_choice(choice)
+    case choice
+    when 'r'
+      'rock'
+    when 'p'
+      'paper'
+    when 'sc'
+      'scissors'
+    when 'l'
+      'lizard'
+    when 'sp'
+      'spock'
+    end
+  end
+
   def choose
     choice = nil
     loop do
-      puts "Please choose rock, paper, scissors, lizard, or spock:"
-      choice = gets.chomp
+      puts "Please choose [r]ock, [p]aper, [sc]issors, [l]izard, or [sp]ock:"
+      choice = translate_choice(gets.chomp)
       break if Move::VALUES.include? choice
       puts "Sorry, invalid choice."
     end
