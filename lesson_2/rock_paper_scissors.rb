@@ -1,37 +1,43 @@
 class Move
-  VALUES = ['rock', 'paper', 'scissors']
+  VALUES = ['rock', 'paper', 'scissors', 'spock', 'lizard']
 
   def initialize(value)
     @value = value
   end
 
-  def scissors?
-    @value == 'scissors'
-  end
-
-  def rock?
-    @value == 'rock'
-  end
-
-  def paper?
-    @value == 'paper'
-  end
-
   def >(other_move)
-    (rock? && other_move.scissors?) ||
-      (paper? && other_move.rock?) ||
-      (scissors? && other_move.paper?)
+    winning_outcomes = { rock: ['lizard', 'scissors'],
+                         paper: ['rock', 'spock'],
+                         scissors: ['lizard', 'paper'],
+                         spock: ['scissors', 'rock'],
+                         lizard: ['spock', 'paper'] }
+    winning_outcomes[@value.to_sym].include?(other_move.value)
   end
 
   def <(other_move)
-    (rock? && other_move.paper?) ||
-      (paper? && other_move.scissors?) ||
-      (scissors? && other_move.rock?)
+    losing_outcomes = { rock: ['paper', 'spock'],
+                        paper: ['scissors', 'lizard'],
+                        scissors: ['spock', 'rock'],
+                        spock: ['lizard', 'paper'],
+                        lizard: ['scissors', 'rock'] }
+    losing_outcomes[@value.to_sym].include?(other_move.value)
+  end
+
+  def rock_wins?(other_move)
+    (other_move.scissors?) || (other_move.lizard?)
+  end
+
+  def rock_loses?(other_move)
+    (other_move.rock?) || (other_move.spock?)
   end
 
   def to_s
     @value
   end
+
+  protected
+
+  attr_reader :value
 end
 
 class Score
@@ -95,7 +101,7 @@ class Human < Player
   def choose
     choice = nil
     loop do
-      puts "Please choose rock, paper, or scissors:"
+      puts "Please choose rock, paper, scissors, lizard, or spock:"
       choice = gets.chomp
       break if Move::VALUES.include? choice
       puts "Sorry, invalid choice."
@@ -123,11 +129,11 @@ class RPSGame
   end
 
   def display_welcome_message
-    puts "Welcome to Rock, Paper, Scissors!"
+    puts "Welcome to Rock, Paper, Scissors, Lizard, Spock!"
   end
 
   def display_goodbye_message
-    puts "Thanks for playing Rock, Paper, Scissors. Good bye!"
+    puts "Thanks for playing Rock, Paper, Scissors, Lizard, Spock. Good bye!"
   end
 
   def display_moves
