@@ -5,31 +5,79 @@ class Move
     @value = value
   end
 
-  def >(other_move)
-    winning_outcomes = { rock: ['lizard', 'scissors'],
-                         paper: ['rock', 'spock'],
-                         scissors: ['lizard', 'paper'],
-                         spock: ['scissors', 'rock'],
-                         lizard: ['spock', 'paper'] }
-    winning_outcomes[@value.to_sym].include?(other_move.value)
+  def rock?
+    @value == 'rock'
   end
 
-  def <(other_move)
-    losing_outcomes = { rock: ['paper', 'spock'],
-                        paper: ['scissors', 'lizard'],
-                        scissors: ['spock', 'rock'],
-                        spock: ['lizard', 'paper'],
-                        lizard: ['scissors', 'rock'] }
-    losing_outcomes[@value.to_sym].include?(other_move.value)
+  def paper?
+    @value == 'paper'
+  end
+
+  def scissors?
+    @value == 'scissors'
+  end
+
+  def lizard?
+    @value == 'lizard'
+  end
+
+  def spock?
+    @value == 'spock'
   end
 
   def to_s
     @value
   end
+end
 
-  protected
+class Rock < Move
+  def >(other_move)
+    (other_move.lizard?) || (other_move.scissors?)
+  end
 
-  attr_reader :value
+  def <(other_move)
+    (other_move.paper?) || (other_move.spock?)
+  end
+end
+
+class Paper < Move
+  def >(other_move)
+    (other_move.rock?) || (other_move.spock?)
+  end
+
+  def <(other_move)
+    (other_move.scissors?) || (other_move.lizard?)
+  end
+end
+
+class Scissors < Move
+  def >(other_move)
+    (other_move.paper?) || (other_move.lizard?)
+  end
+
+  def <(other_move)
+    (other_move.rock?) || (other_move.spock?)
+  end
+end
+
+class Spock < Move
+  def >(other_move)
+    (other_move.scissors?) || (other_move.rock?)
+  end
+
+  def <(other_move)
+    (other_move.paper?) || (other_move.lizard?)
+  end
+end
+
+class Lizard < Move
+  def >(other_move)
+    (other_move.spock?) || (other_move.paper?)
+  end
+
+  def <(other_move)
+    (other_move.scissors?) || (other_move.rock?)
+  end
 end
 
 class Score
@@ -76,6 +124,16 @@ class Player
   def initialize
     set_name
   end
+
+  def get_move(choice)
+    case choice
+    when 'rock' then Rock.new('rock')
+    when 'paper' then Paper.new('paper')
+    when 'scissors' then Scissors.new('scissors')
+    when 'lizard' then Lizard.new('lizard')
+    when 'spock' then Spock.new('spock')
+    end
+  end
 end
 
 class Human < Player
@@ -108,7 +166,7 @@ class Human < Player
       break if Move::VALUES.include? choice
       puts "Sorry, invalid choice."
     end
-    self.move = Move.new(choice)
+    self.move = get_move(choice)
   end
 end
 
@@ -118,7 +176,7 @@ class Computer < Player
   end
 
   def choose
-    self.move = Move.new(Move::VALUES.sample)
+    self.move = get_move(Move::VALUES.sample)
   end
 end
 
