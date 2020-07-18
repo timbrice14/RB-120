@@ -180,12 +180,41 @@ class Computer < Player
   end
 end
 
+class History
+  attr_writer :player, :computer
+
+  def initialize
+    @player = []
+    @computer = []
+  end
+
+  def add(player_move, computer_move)
+    @player << player_move
+    @computer << computer_move
+  end
+
+  def display_name(name)
+    puts "#{name} chose the following moves: "
+  end
+
+  def show_player(name)
+    display_name(name)
+    puts @player.join(', ')
+  end
+
+  def shov_computer(name)
+    display_name(name)
+    puts @computer.join(', ')
+  end
+end
+
 class RPSGame
-  attr_accessor :human, :computer
+  attr_accessor :human, :computer, :history
 
   def initialize
     @human = Human.new
     @computer = Computer.new
+    @history = History.new
   end
 
   def display_welcome_message
@@ -227,6 +256,7 @@ class RPSGame
     loop do
       human.choose
       computer.choose
+      history.add(human.move, computer.move)
       display_moves
       display_winner
       score.update
@@ -245,6 +275,8 @@ class RPSGame
       break unless play_again?
     end
 
+    history.show_player(human.name)
+    history.show_computer(compuer.name)
     display_goodbye_message
   end
 end
