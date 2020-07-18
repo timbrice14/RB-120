@@ -197,6 +197,11 @@ class History
     puts "#{name} chose the following moves: "
   end
 
+  def show(human, computer)
+    show_player(human)
+    show_computer(computer)
+  end
+
   def show_player(name)
     display_name(name)
     puts @player.join(', ')
@@ -272,11 +277,10 @@ class RPSGame
       score = Score.new(human, computer)
       game_loop(score)
       score.display_game_winner
-      break unless play_again?
+      play_again? ? system('clear') : break
     end
 
-    history.show_player(human.name)
-    history.show_computer(computer.name)
+    history.show(human.name, computer.name)
     display_goodbye_message
   end
 end
