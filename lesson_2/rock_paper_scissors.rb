@@ -202,7 +202,7 @@ class History
     puts @player.join(', ')
   end
 
-  def shov_computer(name)
+  def show_computer(name)
     display_name(name)
     puts @computer.join(', ')
   end
@@ -276,7 +276,7 @@ class RPSGame
     end
 
     history.show_player(human.name)
-    history.show_computer(compuer.name)
+    history.show_computer(computer.name)
     display_goodbye_message
   end
 end
