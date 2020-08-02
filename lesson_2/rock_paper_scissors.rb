@@ -180,6 +180,27 @@ class Computer < Player
   end
 end
 
+class R2D2 < Computer
+  def set_name
+    self.name = 'R2D2'
+  end
+
+  def choose
+    self.move = Move.new('rock')
+  end
+end
+
+class Hal < Computer
+  def set_name
+    self.name = 'Hal'
+  end
+
+  def choose
+    self.move = [Move.new('scissors'), Move.new('scissors'),
+                 Move.new('scissors'), Move.new('rock')].sample
+  end
+end
+
 class History
   attr_writer :player, :computer
 
@@ -216,9 +237,17 @@ end
 class RPSGame
   attr_accessor :human, :computer, :history
 
+  def get_computer(computer)
+    @computer = case computer.name
+                when 'R2D2' then R2D2.new
+                when 'Hal' then Hal.new
+                else computer
+                end
+  end
+
   def initialize
     @human = Human.new
-    @computer = Computer.new
+    @computer = get_computer(Computer.new)
     @history = History.new
   end
 
