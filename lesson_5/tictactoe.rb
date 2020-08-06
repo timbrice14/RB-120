@@ -103,8 +103,12 @@ class TTTGame
     puts "Thanks for playing Tic Tac Toe! Goodbye!"
   end
 
-  def display_board(clear: true)
-    clear_screen if clear
+  def clear_screen_and_display_board
+    clear_screen
+    display_board
+  end
+
+  def display_board
     puts "You're a #{human.marker} Computer is a #{computer.marker}."
     puts ""
     puts "     |     |"
@@ -170,7 +174,7 @@ class TTTGame
     display_welcome_message
 
     loop do
-      display_board(clear: false)
+      display_board
       loop do
         human_moves
         break if board.someone_won? || board.full?
@@ -178,7 +182,7 @@ class TTTGame
         computer_moves
         break if board.someone_won? || board.full?
 
-        display_board
+        clear_screen_and_display_board
       end
       display_result
       break unless play_again?
