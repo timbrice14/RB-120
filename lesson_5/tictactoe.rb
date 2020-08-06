@@ -50,6 +50,23 @@ class Board
   def reset
     (1..9).each { |key| @squares[key] = Square.new }
   end
+
+  def draw
+    puts "     |     |"
+    puts "  #{get_square_at(1)}  |  #{get_square_at(2)}  |  " \
+      "#{get_square_at(3)}"
+    puts "     |     |"
+    puts "-----+-----+-----"
+    puts "     |     |"
+    puts "  #{get_square_at(4)}  |  #{get_square_at(5)}  |  " \
+      "#{get_square_at(6)}"
+    puts "     |     |"
+    puts "-----+-----+-----"
+    puts "     |     |"
+    puts "  #{get_square_at(7)}  |  #{get_square_at(8)}  |  " \
+      "#{get_square_at(9)}"
+    puts "     |     |"
+  end
 end
 
 class Square
@@ -90,7 +107,7 @@ class TTTGame
     @computer = Player.new(COMPUTER_MARKER)
   end
 
-  def clear_screen
+  def clear
     system('clear')
   end
 
@@ -104,27 +121,14 @@ class TTTGame
   end
 
   def clear_screen_and_display_board
-    clear_screen
+    clear
     display_board
   end
 
   def display_board
     puts "You're a #{human.marker} Computer is a #{computer.marker}."
     puts ""
-    puts "     |     |"
-    puts "  #{board.get_square_at(1)}  |  #{board.get_square_at(2)}  |  " \
-      "#{board.get_square_at(3)}"
-    puts "     |     |"
-    puts "-----+-----+-----"
-    puts "     |     |"
-    puts "  #{board.get_square_at(4)}  |  #{board.get_square_at(5)}  |  " \
-      "#{board.get_square_at(6)}"
-    puts "     |     |"
-    puts "-----+-----+-----"
-    puts "     |     |"
-    puts "  #{board.get_square_at(7)}  |  #{board.get_square_at(8)}  |  " \
-      "#{board.get_square_at(9)}"
-    puts "     |     |"
+    board.draw
     puts ""
   end
 
@@ -171,7 +175,7 @@ class TTTGame
 
   def reset
     board.reset
-    clear_screen
+    clear
   end
 
   def display_play_again_message
@@ -180,11 +184,12 @@ class TTTGame
   end
 
   def play
-    clear_screen
+    clear
     display_welcome_message
 
     loop do
       display_board
+
       loop do
         human_moves
         break if board.someone_won? || board.full?
