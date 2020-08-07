@@ -38,6 +38,8 @@ class Board
     (1..9).each { |key| @squares[key] = Square.new }
   end
 
+  # rubocop:disable Metrics/AbcSize
+  # rubocop:disable Metrics/MethodLength
   def draw
     puts "     |     |"
     puts "  #{@squares[1]}  |  #{@squares[2]}  |  #{@squares[3]}"
@@ -51,6 +53,8 @@ class Board
     puts "  #{@squares[7]}  |  #{@squares[8]}  |  #{@squares[9]}"
     puts "     |     |"
   end
+  # rubocop:enable Metrics/AbcSize
+  # rubocop:enable Metrics/MethodLength
 
   private
 
@@ -108,21 +112,7 @@ class TTTGame
   def play
     clear
     display_welcome_message
-
-    loop do
-      display_board
-
-      loop do
-        current_player_moves
-        break if board.someone_won? || board.full?
-        clear_screen_and_display_board if human_turn?
-      end
-      display_result
-      break unless play_again?
-      reset
-      display_play_again_message
-    end
-
+    main_game
     display_goodbye_message
   end
 
@@ -217,6 +207,25 @@ class TTTGame
 
   def human_turn?
     @current_marker == HUMAN_MARKER
+  end
+
+  def main_game
+    loop do
+      display_board
+      player_move
+      display_result
+      break unless play_again?
+      reset
+      display_play_again_message
+    end
+  end
+
+  def player_move
+    loop do
+      current_player_moves
+      break if board.someone_won? || board.full?
+      clear_screen_and_display_board if human_turn?
+    end
   end
 end
 
