@@ -165,7 +165,7 @@ class TTTGame
   end
 
   def display_result
-    display_board
+    clear_screen_and_display_board
 
     case board.winning_marker
     when human.marker
