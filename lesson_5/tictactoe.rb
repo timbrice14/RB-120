@@ -143,8 +143,13 @@ class TTTGame
     puts ""
   end
 
+  def joinor(squares, joiner = ', ', conjuction = 'or')
+    squares[-1] = "#{conjuction} #{squares.last}"
+    squares.join(joiner)
+  end
+
   def human_moves
-    puts "Choose a square (#{board.unmarked_keys.join(', ')}): "
+    puts "Choose a square (#{joinor(board.unmarked_keys)}): "
     square = nil
     loop do
       square = gets.chomp.to_i
