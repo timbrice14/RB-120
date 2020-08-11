@@ -88,24 +88,40 @@ class Square
 end
 
 class Player
-  attr_reader :marker
+  attr_accessor :score
 
-  def initialize(marker)
-    @marker = marker
+  def initialize
+    @score = 0
+  end
+end
+
+class Human < Player
+  MARKER = "X"
+
+  def win
+    puts "You won!"
+    @score += 1
+  end
+end
+
+class Computer < Player
+  MARKER = "O"
+
+  def win
+    puts "Computer won!"
+    @score += 1
   end
 end
 
 class TTTGame
-  HUMAN_MARKER = "X"
-  COMPUTER_MARKER = "O"
-  FIRST_TO_MOVE = HUMAN_MARKER
+  FIRST_TO_MOVE = Human::MARKER
 
   attr_reader :board, :human, :computer
 
   def initialize
     @board = Board.new
-    @human = Player.new(HUMAN_MARKER)
-    @computer = Player.new(COMPUTER_MARKER)
+    @human = Human.new
+    @computer = Computer.new
     @current_marker = FIRST_TO_MOVE
   end
 
@@ -137,7 +153,7 @@ class TTTGame
   end
 
   def display_board
-    puts "You're a #{human.marker} Computer is a #{computer.marker}."
+    puts "You're a #{Human::MARKER} Computer is a #{Computer::MARKER}."
     puts ""
     board.draw
     puts ""
@@ -157,21 +173,21 @@ class TTTGame
       puts "Sorry, that's not a valid choice."
     end
 
-    board[square] = human.marker
+    board[square] = Human::MARKER
   end
 
   def computer_moves
-    board[board.unmarked_keys.sample] = computer.marker
+    board[board.unmarked_keys.sample] = Computer::MARKER
   end
 
   def display_result
     clear_screen_and_display_board
 
     case board.winning_marker
-    when human.marker
-      puts "You won!"
-    when computer.marker
-      puts "Computer won!"
+    when Human::MARKER
+      human.win
+    when Computer::MARKER
+      computer.win
     else
       puts "It's a tie!"
     end
@@ -197,21 +213,26 @@ class TTTGame
 
   def display_play_again_message
     puts "Let's play again!"
+  end
+
+  def display_current_score
+    puts "The current score is Human: #{human.score} " \
+      "Computer: #{computer.score}"
     puts ""
   end
 
   def current_player_moves
     if human_turn?
       human_moves
-      @current_marker = COMPUTER_MARKER
+      @current_marker = Computer::MARKER
     else
       computer_moves
-      @current_marker = HUMAN_MARKER
+      @current_marker = Human::MARKER
     end
   end
 
   def human_turn?
-    @current_marker == HUMAN_MARKER
+    @current_marker == Human::MARKER
   end
 
   def main_game
@@ -222,6 +243,7 @@ class TTTGame
       break unless play_again?
       reset
       display_play_again_message
+      display_current_score
     end
   end
 
