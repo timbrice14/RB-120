@@ -160,6 +160,7 @@ class TTTGame
   end
 
   def joinor(squares, joiner = ', ', conjuction = 'or')
+    return squares[0] if squares.size == 1
     squares[-1] = "#{conjuction} #{squares.last}"
     squares.join(joiner)
   end
