@@ -1,5 +1,3 @@
-require 'pry'
-
 class Board
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
@@ -83,6 +81,10 @@ class Board
   # rubocop:enable Metrics/AbcSize
   # rubocop:enable Metrics/MethodLength
 
+  def best_square_unmarked?
+    @squares[Square::BEST_SQUARE] == Square::INITIAL_MARKER
+  end
+
   private
 
   def identical_markers?(squares, num)
@@ -102,6 +104,7 @@ end
 
 class Square
   INITIAL_MARKER = " "
+  BEST_SQUARE = 5
 
   attr_accessor :marker
 
@@ -215,6 +218,8 @@ class TTTGame
   def computer_moves
     if board.at_risk_square?
       board[board.find_at_risk_square] = Computer::MARKER
+    elsif !board.best_square_unmarked?
+      board[Square::BEST_SQUARE] = Computer::MARKER
     else
       board[board.unmarked_keys.sample] = Computer::MARKER
     end
