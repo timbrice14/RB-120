@@ -1,3 +1,5 @@
+require 'pry'
+
 class Board
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
@@ -36,12 +38,10 @@ class Board
     nil
   end
 
-  def at_risk_square?
+  def at_risk_square?(marker)
     WINNING_LINES.each do |line|
       squares = @squares.values_at(*line)
-      return true if count_squares(squares, Human::MARKER) == \
-                     AT_RISK_SQUARES && one_unmarked_square?(squares)
-      return true if count_squares(squares, Computer::MARKER) == \
+      return true if count_squares(squares, marker) == \
                      AT_RISK_SQUARES && one_unmarked_square?(squares)
     end
     false
@@ -82,7 +82,7 @@ class Board
   # rubocop:enable Metrics/MethodLength
 
   def best_square_unmarked?
-    @squares[Square::BEST_SQUARE] == Square::INITIAL_MARKER
+    @squares[Square::BEST_SQUARE].marker == Square::INITIAL_MARKER
   end
 
   private
@@ -134,11 +134,20 @@ class Player
 end
 
 class Human < Player
-  MARKER = "X"
+  attr_accessor :marker
 
   def win
     puts "You won!"
     @score += 1
+  end
+
+  def choose_marker
+    loop do
+      puts "Please choose a one character marker:"
+      @marker = gets.chomp
+      break if @marker.size == 1 && @marker != Computer::MARKER
+      puts "Sorry, that is not a valid choice."
+    end
   end
 end
 
@@ -152,20 +161,24 @@ class Computer < Player
 end
 
 class TTTGame
-  FIRST_TO_MOVE = Human::MARKER
-
   attr_reader :board, :human, :computer
 
   def initialize
     @board = Board.new
     @human = Human.new
     @computer = Computer.new
-    @current_marker = FIRST_TO_MOVE
+    @current_marker = first_to_move
+  end
+
+  def first_to_move
+    human.marker
   end
 
   def play
     clear
     display_welcome_message
+    human.choose_marker
+    @current_marker = first_to_move
     main_game
     display_goodbye_message
   end
@@ -191,7 +204,7 @@ class TTTGame
   end
 
   def display_board
-    puts "You're a #{Human::MARKER} Computer is a #{Computer::MARKER}."
+    puts "You're a #{human.marker} Computer is a #{Computer::MARKER}."
     puts ""
     board.draw
     puts ""
@@ -212,13 +225,14 @@ class TTTGame
       puts "Sorry, that's not a valid choice."
     end
 
-    board[square] = Human::MARKER
+    board[square] = human.marker
   end
 
   def computer_moves
-    if board.at_risk_square?
+    if board.at_risk_square?(Computer::MARKER) || \
+       board.at_risk_square?(human.marker)
       board[board.find_at_risk_square] = Computer::MARKER
-    elsif !board.best_square_unmarked?
+    elsif board.best_square_unmarked?
       board[Square::BEST_SQUARE] = Computer::MARKER
     else
       board[board.unmarked_keys.sample] = Computer::MARKER
@@ -229,7 +243,7 @@ class TTTGame
     clear_screen_and_display_board
 
     case board.winning_marker
-    when Human::MARKER
+    when human.marker
       human.win
     when Computer::MARKER
       computer.win
@@ -252,7 +266,7 @@ class TTTGame
 
   def reset
     board.reset
-    @current_marker = FIRST_TO_MOVE
+    @current_marker = first_to_move
     clear
   end
 
@@ -272,12 +286,12 @@ class TTTGame
       @current_marker = Computer::MARKER
     else
       computer_moves
-      @current_marker = Human::MARKER
+      @current_marker = human.marker
     end
   end
 
   def human_turn?
-    @current_marker == Human::MARKER
+    @current_marker == human.marker
   end
 
   def main_game
