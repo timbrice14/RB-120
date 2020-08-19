@@ -39,8 +39,11 @@ class Board
   def at_risk_square?
     WINNING_LINES.each do |line|
       squares = @squares.values_at(*line)
-      return true if squares.count { |sq| sq.marker == Human::MARKER } \
-        == AT_RISK_SQUARES
+      if count_squares(squares, Human::MARKER) == AT_RISK_SQUARES
+        return true
+      elsif count_squares(squares, Computer::MARKER) == AT_RISK_SQUARES
+        return true
+      end
     end
     false
   end
@@ -49,7 +52,7 @@ class Board
     WINNING_LINES.each do |line|
       squares = @squares.values_at(*line)
       if identical_markers?(squares, AT_RISK_SQUARES)
-        at_risk_square = squares.index { |sq| sq.marker == " " }
+        at_risk_square = squares.index { |sq| sq.marker == Square::INITIAL_MARKER }
         return line[at_risk_square]
       end
     end
@@ -83,6 +86,10 @@ class Board
     markers = squares.select(&:marked?).collect(&:marker)
     return false if markers.size != num
     markers.min == markers.max
+  end
+
+  def count_squares(squares, marker)
+    squares.count { |sq| sq.marker == marker }
   end
 end
 
