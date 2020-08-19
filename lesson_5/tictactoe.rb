@@ -2,6 +2,8 @@ class Board
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
                   [[1, 5, 9], [3, 5, 7]]
+  WINNING_SQUARES = 3
+  AT_RISK_SQUARES = 2
 
   def initialize
     @squares = {}
@@ -27,11 +29,30 @@ class Board
   def winning_marker
     WINNING_LINES.each do |line|
       squares = @squares.values_at(*line)
-      if three_identical_markers?(squares)
+      if identical_markers?(squares, WINNING_SQUARES)
         return squares.first.marker
       end
     end
     nil
+  end
+
+  def at_risk_square?
+    WINNING_LINES.each do |line|
+      squares = @squares.values_at(*line)
+      return true if squares.count { |sq| sq.marker == Human::MARKER } \
+        == AT_RISK_SQUARES
+    end
+    false
+  end
+
+  def find_at_risk_square
+    WINNING_LINES.each do |line|
+      squares = @squares.values_at(*line)
+      if identical_markers?(squares, AT_RISK_SQUARES)
+        at_risk_square = squares.index { |sq| sq.marker == " " }
+        return line[at_risk_square]
+      end
+    end
   end
 
   def reset
@@ -58,9 +79,9 @@ class Board
 
   private
 
-  def three_identical_markers?(squares)
+  def identical_markers?(squares, num)
     markers = squares.select(&:marked?).collect(&:marker)
-    return false if markers.size != 3
+    return false if markers.size != num
     markers.min == markers.max
   end
 end
@@ -178,7 +199,11 @@ class TTTGame
   end
 
   def computer_moves
-    board[board.unmarked_keys.sample] = Computer::MARKER
+    if board.at_risk_square?
+      board[board.find_at_risk_square] = Computer::MARKER
+    else
+      board[board.unmarked_keys.sample] = Computer::MARKER
+    end
   end
 
   def display_result
