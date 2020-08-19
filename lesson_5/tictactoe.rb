@@ -126,10 +126,11 @@ class Square
 end
 
 class Player
-  attr_accessor :score
+  attr_accessor :score, :name
 
   def initialize
     @score = 0
+    set_name
   end
 end
 
@@ -139,6 +140,17 @@ class Human < Player
   def win
     puts "You won!"
     @score += 1
+  end
+
+  def set_name
+    n = ""
+    loop do
+      puts "What is your name?"
+      n = gets.chomp
+      break unless n.empty?
+      puts "Sorry, must enter a value."
+    end
+    @name = n
   end
 
   def choose_marker
@@ -153,6 +165,10 @@ end
 
 class Computer < Player
   MARKER = "O"
+
+  def set_name
+    self.name = ['R2D2', 'Hal', 'Chappie', 'Sonny', 'Number 5'].sample
+  end
 
   def win
     puts "Computer won!"
@@ -190,7 +206,8 @@ class TTTGame
   end
 
   def display_welcome_message
-    puts "Welcome to Tic Tac Toe!"
+    puts "Welcome to Tic Tac Toe #{human.name}!"
+    puts "You are playing against #{computer.name} today!"
     puts ""
   end
 
@@ -204,7 +221,7 @@ class TTTGame
   end
 
   def display_board
-    puts "You're a #{human.marker} Computer is a #{Computer::MARKER}."
+    puts "You're a #{human.marker} #{computer.name} a #{Computer::MARKER}."
     puts ""
     board.draw
     puts ""
@@ -275,8 +292,8 @@ class TTTGame
   end
 
   def display_current_score
-    puts "The current score is Human: #{human.score} " \
-      "Computer: #{computer.score}"
+    puts "The current score is #{human.name}: #{human.score} " \
+      "#{computer.name}: #{computer.score}"
     puts ""
   end
 
