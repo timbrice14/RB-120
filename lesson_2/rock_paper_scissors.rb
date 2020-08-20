@@ -282,11 +282,11 @@ class RPSGame
     loop do
       puts "Would you like to play again? (y/n)"
       answer = gets.chomp
-      break if ['y', 'n'].include? answer.downcase
+      break if ['y', 'n', 'yes', 'no'].include? answer.downcase
       puts "Sorry, must be y or n."
     end
 
-    answer.downcase == 'y'
+    answer.downcase == 'y' || 'yes'
   end
 
   def game_loop(score)
