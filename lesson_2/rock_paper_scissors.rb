@@ -138,6 +138,7 @@ end
 
 class Human < Player
   def set_name
+    system('clear')
     n = ""
     loop do
       puts "What is your name?"
