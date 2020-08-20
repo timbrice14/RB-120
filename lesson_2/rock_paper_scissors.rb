@@ -254,6 +254,8 @@ class RPSGame
 
   def display_welcome_message
     puts "Welcome to Rock, Paper, Scissors, Lizard, Spock!"
+    puts "You will be playing a tournament against #{computer.name} today."
+    puts "The first to #{Score::WINNING_SCORE} wins!"
   end
 
   def display_goodbye_message
