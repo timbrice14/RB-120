@@ -142,7 +142,7 @@ class Human < Player
     n = ""
     loop do
       puts "What is your name?"
-      n = gets.chomp
+      n = gets.strip.chomp
       break unless n.empty?
       puts "Sorry, must enter a value."
     end
