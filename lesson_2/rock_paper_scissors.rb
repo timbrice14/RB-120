@@ -240,7 +240,8 @@ class RPSGame
       score = Score.new(human, computer)
       game_loop(score)
       display_game_winner(score)
-      play_again? ? system('clear') : break
+      break unless play_again?
+      system('clear')
     end
 
     history.show(human.name, computer.name)
@@ -297,7 +298,7 @@ class RPSGame
       puts "Sorry, must be y or n."
     end
 
-    answer.downcase == 'y' || 'yes'
+    ["y", "yes"].include? answer.downcase
   end
 
   def game_loop(score)
