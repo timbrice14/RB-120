@@ -140,16 +140,6 @@ class Human < Player
     self.name = n
   end
 
-  def translate_choice(choice)
-    case choice
-    when 'r', 'rock' then 'rock'
-    when 'p', 'paper' then 'paper'
-    when 'sc', 'scissors' then 'scissors'
-    when 'l', 'lizard' then 'lizard'
-    when 'sp', 'spock' then 'spock'
-    end
-  end
-
   def choose
     choice = nil
     loop do
@@ -159,6 +149,18 @@ class Human < Player
       puts "Sorry, invalid choice."
     end
     self.move = get_move(choice)
+  end
+
+  private
+
+  def translate_choice(choice)
+    case choice
+    when 'r', 'rock' then 'rock'
+    when 'p', 'paper' then 'paper'
+    when 'sc', 'scissors' then 'scissors'
+    when 'l', 'lizard' then 'lizard'
+    when 'sp', 'spock' then 'spock'
+    end
   end
 end
 
@@ -215,6 +217,8 @@ class History
     show_computer(computer)
   end
 
+  private
+
   def show_player(name)
     display_name(name)
     puts @player.join(', ')
@@ -228,6 +232,22 @@ end
 
 class RPSGame
   attr_accessor :human, :computer, :history
+
+  def play
+    display_welcome_message
+
+    loop do
+      score = Score.new(human, computer)
+      game_loop(score)
+      display_game_winner(score)
+      play_again? ? system('clear') : break
+    end
+
+    history.show(human.name, computer.name)
+    display_goodbye_message
+  end
+
+  private
 
   def get_computer(computer)
     @computer = case computer.name
@@ -291,20 +311,6 @@ class RPSGame
       score.display
       break if score.game_winner?
     end
-  end
-
-  def play
-    display_welcome_message
-
-    loop do
-      score = Score.new(human, computer)
-      game_loop(score)
-      display_game_winner(score)
-      play_again? ? system('clear') : break
-    end
-
-    history.show(human.name, computer.name)
-    display_goodbye_message
   end
 
   def display_game_winner(score)
