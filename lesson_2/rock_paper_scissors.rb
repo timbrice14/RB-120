@@ -151,11 +151,11 @@ class Human < Player
 
   def translate_choice(choice)
     case choice
-    when 'r' then 'rock'
-    when 'p' then 'paper'
-    when 'sc' then 'scissors'
-    when 'l' then 'lizard'
-    when 'sp' then 'spock'
+    when 'r', 'rock' then 'rock'
+    when 'p', 'paper' then 'paper'
+    when 'sc', 'scissors' then 'scissors'
+    when 'l', 'lizard' then 'lizard'
+    when 'sp', 'spock' then 'spock'
     end
   end
 
@@ -163,7 +163,7 @@ class Human < Player
     choice = nil
     loop do
       puts "Please choose [r]ock, [p]aper, [sc]issors, [l]izard, or [sp]ock:"
-      choice = translate_choice(gets.chomp)
+      choice = translate_choice(gets.downcase.chomp)
       break if Move::VALUES.include? choice
       puts "Sorry, invalid choice."
     end
