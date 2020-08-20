@@ -82,6 +82,7 @@ end
 
 class Score
   WINNING_SCORE = 5
+  attr_reader :human_score, :computer_score
 
   def initialize(human, computer)
     @human = human
@@ -105,16 +106,6 @@ class Score
 
   def game_winner?
     @human_score >= WINNING_SCORE || @computer_score >= WINNING_SCORE
-  end
-
-  def display_game_winner
-    if @human_score > @computer_score
-      puts "Congrats to #{@human.name}, who wins by a score of " \
-      "#{@human_score} to #{@computer_score}"
-    else
-      puts "Congrats to #{@computer.name}, who wins by a score of " \
-        "#{@computer_score} to #{@human_score}"
-    end
   end
 end
 
@@ -308,12 +299,22 @@ class RPSGame
     loop do
       score = Score.new(human, computer)
       game_loop(score)
-      score.display_game_winner
+      display_game_winner(score)
       play_again? ? system('clear') : break
     end
 
     history.show(human.name, computer.name)
     display_goodbye_message
+  end
+
+  def display_game_winner(score)
+    if score.human_score > score.computer_score
+      puts "Congrats to #{human.name}, who wins by a score of " \
+      "#{score.human_score} to #{score.computer_score}"
+    else
+      puts "Congrats to #{@computer.name}, who wins by a score of " \
+        "#{score.computer_score} to #{score.human_score}"
+    end
   end
 end
 
