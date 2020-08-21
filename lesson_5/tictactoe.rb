@@ -1,5 +1,3 @@
-require 'pry'
-
 class Board
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
@@ -22,10 +20,6 @@ class Board
 
   def full?
     unmarked_keys.empty?
-  end
-
-  def someone_won?
-    !!winning_marker
   end
 
   def winning_marker
@@ -188,10 +182,6 @@ class TTTGame
     @current_marker = first_to_move
   end
 
-  def first_to_move
-    human.marker
-  end
-
   def play
     clear
     display_welcome_message
@@ -205,6 +195,10 @@ class TTTGame
 
   def clear
     system('clear')
+  end
+
+  def first_to_move
+    human.marker
   end
 
   def display_welcome_message
@@ -329,9 +323,13 @@ class TTTGame
   def player_move
     loop do
       current_player_moves
-      break if board.someone_won? || board.full?
+      break if someone_won? || board.full?
       clear_screen_and_display_board if human_turn?
     end
+  end
+
+  def someone_won?
+    !!board.winning_marker
   end
 end
 
