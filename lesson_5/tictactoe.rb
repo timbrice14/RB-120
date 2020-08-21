@@ -1,3 +1,5 @@
+require 'pry'
+
 class Board
   WINNING_LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9]] +
                   [[1, 4, 7], [2, 5, 8], [3, 6, 9]] +
@@ -158,7 +160,7 @@ class Human < Player
       @marker = gets.chomp
       break if @marker.size == 1 && @marker != Computer::MARKER
       puts "Sorry, that is not a valid choice."
-      puts "Please choose a single character (like 'T') that is not an O"
+      puts "Please choose a single character (like 'T') that is not an O."
     end
   end
 end
@@ -237,12 +239,13 @@ class TTTGame
     puts "Choose a square (#{joinor(board.unmarked_keys)}): "
     square = nil
     loop do
-      square = gets.chomp.to_i
-      break if board.unmarked_keys.include?(square)
+      square = gets.chomp
+      break if ('1'..'9').include?(square) &&
+               board.unmarked_keys.include?(square.to_i)
       puts "Sorry, that's not a valid choice."
     end
 
-    board[square] = human.marker
+    board[square.to_i] = human.marker
   end
 
   def computer_moves
