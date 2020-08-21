@@ -158,6 +158,7 @@ class Human < Player
       @marker = gets.chomp
       break if @marker.size == 1 && @marker != Computer::MARKER
       puts "Sorry, that is not a valid choice."
+      puts "Please choose a single character (like 'T') that is not an O"
     end
   end
 end
