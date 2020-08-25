@@ -1,17 +1,10 @@
-require 'pry'
-
 module Hand
-  WINNING_TOTAL = 21
   ACE_HIGH_VALUE = 11
   ACE_LOW_VALUE = 1
 
   def busted?
-    total > WINNING_TOTAL
+    total > Game::WINNING_TOTAL
   end
-
-  def hit; end
-
-  def stay; end
 
   def total
     @cards.map { |card| get_value(card[0]) }.sum
@@ -43,7 +36,7 @@ module Hand
 
   def calculate_multiple_aces
     ace_value_total = ACE_HIGH_VALUE + (count_aces - 1)
-    if busted?(total_without_ace + ace_value_total)
+    if (total_without_ace + ace_value_total) > Game::WINNING_TOTAL
       count_aces
     else
       ace_value_total
@@ -51,7 +44,7 @@ module Hand
   end
 
   def calculate_single_ace
-    if busted?(total_without_ace + ACE_HIGH_VALUE)
+    if (total_without_ace + ACE_HIGH_VALUE) > Game::WINNING_TOTAL
       ACE_LOW_VALUE
     else
       ACE_HIGH_VALUE
@@ -66,10 +59,10 @@ end
 class Participant
   include Hand
 
-  attr_accessor :cards
+  attr_accessor :cards, :score
 
   def initialize
-    @cards = []
+    @score = 0
   end
 end
 
@@ -100,33 +93,59 @@ end
 
 class Game
   VALID_CHOICES = %w(hit h stay s)
+  WINNING_TOTAL = 21
   attr_accessor :deck, :player, :dealer
 
   def initialize
-    @deck = Deck.new
     @player = Player.new
     @dealer = Dealer.new
   end
 
   def start
-    deal_cards
-    show_initial_cards
-    player_turn
-    dealer_turn
-    show_result
+    loop do
+      welcome_message
+      deal_hand_and_take_turns
+      increment_score
+      show_result
+      break if overall_winner?
+      answer = deal_next_hand
+      next unless answer == ''
+    end
+
+    announce_overall_winner
   end
 
   private
+
+  def deal_hand_and_take_turns
+    deal
+    show_initial_cards
+    player_turn
+    dealer_turn
+  end
 
   def prompt(msg)
     puts "=> #{msg}"
   end
 
-  def deal_cards
-    @deck.deal(player)
-    @deck.deal(dealer)
-    @deck.deal(player)
-    @deck.deal(dealer)
+  def clear
+    system('clear')
+  end
+
+  def welcome_message
+    clear
+    prompt "Welcome to #{WINNING_TOTAL}! The first player to 5 wins! The " \
+      "current score is: Player #{@player.score} Dealer: #{@dealer.score}"
+  end
+
+  def deal
+    @player.cards = []
+    @dealer.cards = []
+    @deck = Deck.new
+    2.times do
+      @deck.deal(player)
+      @deck.deal(dealer)
+    end
   end
 
   def display_hand(hand)
@@ -145,6 +164,7 @@ class Game
       "for a total of #{@dealer.total}"
   end
 
+  # rubocop:disable Metrics/MethodLength
   def player_turn
     loop do
       prompt "Player total is #{@player.total}"
@@ -159,12 +179,13 @@ class Game
       end
     end
   end
+  # rubocop:enable Metrics/MethodLength
 
   def dealer_turn
     say_dealer_hand
     return if @player.busted?
 
-    until @dealer.total > Dealer::STAY
+    until @dealer.total >= Dealer::STAY
       prompt "Dealer dealt #{display_hand(@deck[0])}"
       @deck.deal(dealer)
 
@@ -205,6 +226,13 @@ class Game
     end
   end
 
+  def increment_score
+    case determine_winner
+    when 'Player' then @player.score += 1
+    when 'Dealer' then @dealer.score += 1
+    end
+  end
+
   def show_result
     prompt "Player has #{@player.total}. Dealer has #{@dealer.total}."
     case determine_winner
@@ -213,6 +241,20 @@ class Game
     else
       prompt "It's a tie!"
     end
+  end
+
+  def deal_next_hand
+    prompt "Press enter to deal the next hand"
+    gets.chomp
+  end
+
+  def overall_winner?
+    @player.score == 5 || @dealer.score == 5
+  end
+
+  def announce_overall_winner
+    winner = @player.score > @dealer.score ? "Player" : "Dealer"
+    prompt "#{winner} wins the match!"
   end
 end
 
